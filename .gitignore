@@ -1,0 +1,19 @@
+# Environment variables (rahasia - JANGAN pernah di-push)
+.env
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+
+# File bukti laporan (hasil upload user, bukan bagian dari source code)
+storage/evidence/*
+!storage/evidence/.gitkeep
+
+# Go
+vendor/
+
+# OS/Editor
+.DS_Store
+.vscode/
