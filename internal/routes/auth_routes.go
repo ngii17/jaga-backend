@@ -37,9 +37,20 @@ func RegisterAuthRoutes(app *fiber.App, cfg *config.Config, authHandler *handler
 		},
 	})
 
+	authenticatedLimiter := limiter.New(limiter.Config{
+		Max:        30,
+		Expiration: 1 * time.Minute,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"success": false,
+				"message": "Terlalu banyak permintaan, coba lagi beberapa saat lagi",
+			})
+		},
+	})
+
 	auth.Post("/login", loginLimiter, authHandler.Login)
 	auth.Post("/verify-otp", otpLimiter, authHandler.VerifyOTP)
 
-	auth.Get("/me", middleware.RequireAuth(cfg), authHandler.Me)
-	auth.Post("/users", middleware.RequireAuth(cfg), middleware.RequireManageUsers(userRepo), authHandler.RegisterVerifikator)
+	auth.Get("/me", authenticatedLimiter, middleware.RequireAuth(cfg), authHandler.Me)
+	auth.Post("/users", authenticatedLimiter, middleware.RequireAuth(cfg), middleware.RequireManageUsers(userRepo), authHandler.RegisterVerifikator)
 }
