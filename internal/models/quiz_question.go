@@ -29,3 +29,11 @@ type QuizQuestion struct {
 func (QuizQuestion) TableName() string {
 	return "quiz_questions"
 }
+
+func (s QuizScenario) IsValid() bool {
+	switch s {
+	case ScenarioPencegahan, ScenarioPenanganan:
+		return true
+	}
+	return false
+}

@@ -58,6 +58,13 @@ func NewReportService(reportRepo repository.ReportRepository, threatRepo reposit
 const evidenceStorageDir = "storage/evidence"
 
 func (s *reportService) SubmitReport(input SubmitReportInput) (*models.Report, error) {
+	if !input.Category.IsValid() {
+		return nil, errors.New("kategori laporan tidak valid")
+	}
+	if !input.Severity.IsValid() {
+		return nil, errors.New("tingkat keparahan tidak valid")
+	}
+
 	fingerprint := utils.GenerateFingerprint(input.IPAddress, input.UserAgent)
 
 	report := &models.Report{
@@ -125,6 +132,10 @@ func (s *reportService) SubmitReport(input SubmitReportInput) (*models.Report, e
 }
 
 func (s *reportService) VerifyReport(reportID uint, newStatus models.ReportStatus, verifiedBy uuid.UUID, note string) error {
+	if !newStatus.IsValid() || newStatus == models.ReportStatusPending {
+		return errors.New("status verifikasi tidak valid, harus 'diterima' atau 'ditolak'")
+	}
+
 	if newStatus != models.ReportStatusDiterima && newStatus != models.ReportStatusDitolak {
 		return errors.New("status verifikasi tidak valid, harus 'diterima' atau 'ditolak'")
 	}

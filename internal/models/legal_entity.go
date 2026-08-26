@@ -23,3 +23,11 @@ type LegalEntity struct {
 func (LegalEntity) TableName() string {
 	return "legal_entities"
 }
+
+func (c LegalCategory) IsValid() bool {
+	switch c {
+	case CategoryPinjol, CategoryInvestasi, CategoryJudiTerkait, CategoryLainnya:
+		return true
+	}
+	return false
+}

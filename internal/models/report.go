@@ -35,3 +35,27 @@ type Report struct {
 func (Report) TableName() string {
 	return "reports"
 }
+
+func (c ReportCategory) IsValid() bool {
+	switch c {
+	case CategoryPinjolIlegal, CategoryJudiOnline, CategoryInvestasiBodong, CategoryReportLainnya:
+		return true
+	}
+	return false
+}
+
+func (s ReportSeverity) IsValid() bool {
+	switch s {
+	case SeverityRingan, SeveritySedang, SeverityBerat:
+		return true
+	}
+	return false
+}
+
+func (s ReportStatus) IsValid() bool {
+	switch s {
+	case ReportStatusPending, ReportStatusDiterima, ReportStatusDitolak:
+		return true
+	}
+	return false
+}

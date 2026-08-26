@@ -106,10 +106,17 @@ func (s *checkService) SearchName(name string) (*SearchResult, error) {
 }
 
 func (s *checkService) GetQuizQuestions(scenario models.QuizScenario) ([]models.QuizQuestion, error) {
+	if !scenario.IsValid() {
+		return nil, errors.New("skenario kuis tidak valid")
+	}
+
 	return s.quizRepo.GetQuestionsByScenario(scenario)
 }
 
 func (s *checkService) SubmitQuiz(scenario models.QuizScenario, answers []QuizAnswer) (*QuizResult, error) {
+	if !scenario.IsValid() {
+		return nil, errors.New("skenario kuis tidak valid")
+	}
 	totalScore := 0
 
 	questions, err := s.quizRepo.GetQuestionsByScenario(scenario)
