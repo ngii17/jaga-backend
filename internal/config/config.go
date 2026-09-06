@@ -16,6 +16,7 @@ type Config struct {
 	SMTPEmail             string
 	SMTPAppPass           string
 	EvidenceEncryptionKey string
+	GeminiAPIKey          string
 }
 
 func Load() *Config {
@@ -32,5 +33,6 @@ func Load() *Config {
 		SMTPEmail:             os.Getenv("SMTP_EMAIL"),
 		SMTPAppPass:           os.Getenv("SMTP_APP_PASSWORD"),
 		EvidenceEncryptionKey: os.Getenv("EVIDENCE_ENCRYPTION_KEY"),
+		GeminiAPIKey:          os.Getenv("GEMINI_API_KEY"),
 	}
 }

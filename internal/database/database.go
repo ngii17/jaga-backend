@@ -31,6 +31,8 @@ func Connect(cfg *config.Config) *gorm.DB {
 		&models.ReportEvidence{},
 		&models.ReportStatusLog{},
 		&models.Testimonial{},
+		&models.ChatSession{},
+		&models.ChatMessage{},
 	); err != nil {
 		log.Fatalf("Gagal migrasi tabel: %v", err)
 	}

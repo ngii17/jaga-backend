@@ -48,7 +48,17 @@ type ReportService interface {
 	GetReports(status models.ReportStatus) ([]models.Report, error)
 	GetReportStatus(reportID uint) (*models.Report, error)
 	GetDecryptedEvidence(evidenceID uint) ([]byte, string, error)
-	GenerateReportDraft(reportID uint) (string, error)
+	GenerateReportDraft(reportID uint) (*ReportDraftResult, error)
+}
+
+type OfficialChannel struct {
+	Name    string `json:"name"`
+	Contact string `json:"contact"`
+}
+
+type ReportDraftResult struct {
+	Draft            string            `json:"draft"`
+	OfficialChannels []OfficialChannel `json:"official_channels"`
 }
 
 func NewReportService(reportRepo repository.ReportRepository, threatRepo repository.ThreatEntityRepository, testimonialRepo repository.TestimonialRepository, cfg *config.Config) ReportService {
@@ -211,15 +221,15 @@ func (s *reportService) GetDecryptedEvidence(evidenceID uint) ([]byte, string, e
 	return decrypted, evidence.DetectedMimeType, nil
 }
 
-func (s *reportService) GenerateReportDraft(reportID uint) (string, error) {
+func (s *reportService) GenerateReportDraft(reportID uint) (*ReportDraftResult, error) {
 	report, err := s.reportRepo.FindByID(reportID)
 	if err != nil {
-		return "", errors.New("laporan tidak ditemukan")
+		return nil, errors.New("laporan tidak ditemukan")
 	}
 
 	evidences, err := s.reportRepo.FindEvidencesByReportID(reportID)
 	if err != nil {
-		return "", errors.New("gagal mengambil data bukti")
+		return nil, errors.New("gagal mengambil data bukti")
 	}
 
 	draft := fmt.Sprintf(
@@ -244,8 +254,17 @@ func (s *reportService) GenerateReportDraft(reportID uint) (string, error) {
 		}
 	}
 
-	draft += "\n====================================\n" +
-		"Draf ini disusun otomatis oleh sistem JAGA dan perlu ditinjau ulang sebelum dikirim resmi ke OJK/Satgas PASTI."
+	return &ReportDraftResult{
+		Draft:            draft,
+		OfficialChannels: officialChannels,
+	}, nil
+}
 
-	return draft, nil
+// Data resmi, jarang berubah — makanya di-hardcode, bukan dari database.
+var officialChannels = []OfficialChannel{
+	{Name: "OJK - Layanan Konsumen", Contact: "Telepon 157 / WhatsApp 081-157-157-157"},
+	{Name: "OJK - Email", Contact: "konsumen@ojk.go.id"},
+	{Name: "Satgas Waspada Investasi", Contact: "aduan@waspadainvestasi.id"},
+	{Name: "Kepolisian - Patroli Siber", Contact: "patrolisiber.id / info@cyber.polri.go.id"},
+	{Name: "Kominfo - Aduan Konten", Contact: "aduankonten.id / aduankonten@kominfo.go.id / WA 08119224545"},
 }

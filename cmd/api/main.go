@@ -34,18 +34,21 @@ func main() {
 
 	// 3d. Rakit Repository — Komunitas
 	testimonialRepo := repository.NewTestimonialRepository(db)
+	chatRepo := repository.NewChatRepository(db)
 
 	// 4. Rakit Service
 	authService := service.NewAuthService(userRepo, cfg)
 	checkService := service.NewCheckService(legalRepo, threatRepo, quizRepo)
 	reportService := service.NewReportService(reportRepo, threatRepo, testimonialRepo, cfg)
 	testimonialService := service.NewTestimonialService(testimonialRepo)
+	chatService := service.NewChatService(chatRepo, checkService, reportService, cfg)
 
 	// 5. Rakit Handler
 	authHandler := handler.NewAuthHandler(authService)
 	checkHandler := handler.NewCheckHandler(checkService)
 	reportHandler := handler.NewReportHandler(reportService)
 	testimonialHandler := handler.NewTestimonialHandler(testimonialService)
+	chatHandler := handler.NewChatHandler(chatService)
 
 	// 6. Siapkan Fiber app
 	app := fiber.New()
@@ -62,6 +65,7 @@ func main() {
 	routes.RegisterCheckRoutes(app, checkHandler)
 	routes.RegisterReportRoutes(app, cfg, reportHandler, userRepo)
 	routes.RegisterTestimonialRoutes(app, cfg, testimonialHandler, userRepo)
+	routes.RegisterChatRoutes(app, chatHandler)
 
 	// 7. Jalankan server
 	log.Printf("Server jalan di port %s", cfg.AppPort)

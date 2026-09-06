@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"jaga-backend/internal/models"
 	"jaga-backend/internal/repository"
@@ -61,12 +62,15 @@ func (s *checkService) SearchName(name string) (*SearchResult, error) {
 	if err != nil {
 		return nil, errors.New("gagal melakukan pencarian")
 	}
-	if len(threats) > 0 && threats[0].Name == name {
+	if len(threats) > 0 {
 		return &SearchResult{
-			Status:      StatusTerkonfirmasiBahaya,
+			Status:      StatusMiripWaspada,
 			MatchedName: threats[0].Name,
 			ReportCount: threats[0].ReportCount,
-			Message:     "Aplikasi ini sudah dilaporkan dan diverifikasi berbahaya. Jangan gunakan.",
+			Message: fmt.Sprintf(
+				"Nama ini MIRIP dengan '%s' yang sudah dilaporkan %d kali dan terverifikasi bahaya. Pastikan lagi apakah ini benar-benar nama yang sama persis dengan yang kamu maksud, karena beda sedikit penulisan bisa jadi entitas yang berbeda.",
+				threats[0].Name, threats[0].ReportCount,
+			),
 		}, nil
 	}
 
