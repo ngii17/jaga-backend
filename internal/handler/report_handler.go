@@ -168,3 +168,18 @@ func (h *ReportHandler) GetReportDraft(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": true, "data": fiber.Map{"draft": draft}})
 }
+
+// GET /report/:id (wajib login + izin can_approve_report)
+func (h *ReportHandler) GetReportDetail(c *fiber.Ctx) error {
+	reportID, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "ID laporan tidak valid"})
+	}
+
+	detail, err := h.reportService.GetReportDetail(uint(reportID))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"success": false, "message": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": true, "data": detail})
+}

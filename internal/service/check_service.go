@@ -34,16 +34,21 @@ type QuizResult struct {
 	Message    string `json:"message"`
 }
 
-type CheckService interface {
-	SearchName(name string) (*SearchResult, error)
-	GetQuizQuestions(scenario models.QuizScenario) ([]models.QuizQuestion, error)
-	SubmitQuiz(scenario models.QuizScenario, answers []QuizAnswer) (*QuizResult, error)
-}
-
 type checkService struct {
 	legalRepo  repository.LegalEntityRepository
 	threatRepo repository.ThreatEntityRepository
 	quizRepo   repository.QuizRepository
+}
+
+type CheckService interface {
+	SearchName(name string) (*SearchResult, error)
+	GetQuizQuestions(scenario models.QuizScenario) ([]models.QuizQuestion, error)
+	SubmitQuiz(scenario models.QuizScenario, answers []QuizAnswer) (*QuizResult, error)
+	ListThreatEntities() ([]models.ThreatEntity, error) // <- baris baru
+}
+
+func (s *checkService) ListThreatEntities() ([]models.ThreatEntity, error) {
+	return s.threatRepo.ListAll()
 }
 
 func NewCheckService(

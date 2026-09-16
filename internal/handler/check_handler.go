@@ -95,3 +95,13 @@ func (h *CheckHandler) SubmitQuiz(c *fiber.Ctx) error {
 }
 
 var _ = strconv.Itoa // placeholder, hapus kalau strconv tidak dipakai
+
+// GET /check/threats
+func (h *CheckHandler) ListThreats(c *fiber.Ctx) error {
+	entities, err := h.checkService.ListThreatEntities()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "message": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": true, "data": entities})
+}

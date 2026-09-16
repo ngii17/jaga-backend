@@ -49,6 +49,7 @@ type ReportService interface {
 	GetReportStatus(reportID uint) (*models.Report, error)
 	GetDecryptedEvidence(evidenceID uint) ([]byte, string, error)
 	GenerateReportDraft(reportID uint) (*ReportDraftResult, error)
+	GetReportDetail(reportID uint) (*ReportDetailResult, error) // <- baris baru
 }
 
 type OfficialChannel struct {
@@ -59,6 +60,28 @@ type OfficialChannel struct {
 type ReportDraftResult struct {
 	Draft            string            `json:"draft"`
 	OfficialChannels []OfficialChannel `json:"official_channels"`
+}
+
+type ReportDetailResult struct {
+	Report    *models.Report          `json:"report"`
+	Evidences []models.ReportEvidence `json:"evidences"`
+}
+
+func (s *reportService) GetReportDetail(reportID uint) (*ReportDetailResult, error) {
+	report, err := s.reportRepo.FindByID(reportID)
+	if err != nil {
+		return nil, errors.New("laporan tidak ditemukan")
+	}
+
+	evidences, err := s.reportRepo.FindEvidencesByReportID(reportID)
+	if err != nil {
+		return nil, errors.New("gagal mengambil data bukti")
+	}
+
+	return &ReportDetailResult{
+		Report:    report,
+		Evidences: evidences,
+	}, nil
 }
 
 func NewReportService(reportRepo repository.ReportRepository, threatRepo repository.ThreatEntityRepository, testimonialRepo repository.TestimonialRepository, cfg *config.Config) ReportService {

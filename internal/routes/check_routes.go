@@ -26,4 +26,5 @@ func RegisterCheckRoutes(app *fiber.App, checkHandler *handler.CheckHandler) {
 	check.Get("/search", checkLimiter, checkHandler.Search)
 	check.Get("/quiz/questions", checkLimiter, checkHandler.GetQuizQuestions)
 	check.Post("/quiz/submit", checkLimiter, checkHandler.SubmitQuiz)
+	app.Get("/check/threats", checkHandler.ListThreats)
 }

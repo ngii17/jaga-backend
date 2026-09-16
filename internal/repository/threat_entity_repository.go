@@ -12,10 +12,17 @@ type ThreatEntityRepository interface {
 	SearchByName(name string, limit int) ([]models.ThreatEntity, error)
 	FindExactByName(name string) (*models.ThreatEntity, error)
 	IncrementOrCreate(name string, category models.ReportCategory) error
+	ListAll() ([]models.ThreatEntity, error) // <- baris baru
 }
 
 type threatEntityRepository struct {
 	db *gorm.DB
+}
+
+func (r *threatEntityRepository) ListAll() ([]models.ThreatEntity, error) {
+	var entities []models.ThreatEntity
+	err := r.db.Order("report_count desc").Find(&entities).Error
+	return entities, err
 }
 
 func NewThreatEntityRepository(db *gorm.DB) ThreatEntityRepository {

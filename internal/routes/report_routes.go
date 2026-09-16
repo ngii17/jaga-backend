@@ -57,4 +57,5 @@ func RegisterReportRoutes(app *fiber.App, cfg *config.Config, reportHandler *han
 	report.Get("/evidence/:evidenceId", authenticatedLimiter, middleware.RequireAuth(cfg), middleware.RequireApproveReport(userRepo), reportHandler.GetEvidence)
 	report.Get("/:id/draft", authenticatedLimiter, middleware.RequireAuth(cfg), middleware.RequireApproveReport(userRepo), reportHandler.GetReportDraft)
 	report.Post("/:id/verify", authenticatedLimiter, middleware.RequireAuth(cfg), middleware.RequireApproveReport(userRepo), reportHandler.VerifyReport)
+	report.Get("/:id", authenticatedLimiter, middleware.RequireAuth(cfg), middleware.RequireApproveReport(userRepo), reportHandler.GetReportDetail)
 }
